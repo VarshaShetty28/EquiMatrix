@@ -1,0 +1,165 @@
+<div class="p-6 bg-gray-100 min-h-screen text-gray-800">
+
+  <!-- HEADER -->
+  <div class="flex justify-between items-center mb-6">
+    <div class="mb-4 -mt-6">
+      <h1 class="text-3xl font-bold mb-2 text-slate-800">
+        Manage employee share exercise requests
+      </h1>
+    </div>
+  </div>
+
+  <!-- ERROR MESSAGE -->
+  <div *ngIf="errorMessage" class="mb-4 p-4 bg-red-100 text-red-700 rounded-lg border border-red-300">
+    {{ errorMessage }}
+  </div>
+
+  <!-- LOADING STATE -->
+  <div *ngIf="isLoading" class="flex items-center justify-center h-96">
+    <div class="text-center">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+      <p class="text-gray-600">Loading exercise requests...</p>
+    </div>
+  </div>
+
+  <!-- SEARCH -->
+  <div *ngIf="!isLoading" class="flex items-center gap-4 mb-8">
+    <input
+      type="text"
+      [(ngModel)]="searchText"
+      placeholder="Search by Employee ID "
+      class="w-[400px] px-4 py-2 rounded-lg border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-green-400"
+      (input)="onSearch()"
+    />
+
+    <button 
+      (click)="onSearch()"
+      class="bg-blue-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-blue-700 transition"
+    >
+      Search
+    </button>
+  </div>
+
+  <!-- TABLE CARD -->
+  <div *ngIf="!isLoading" class="bg-white text-gray-800 p-6 rounded-lg shadow-sm border border-gray-200">
+
+    <h2 class="text-xl font-semibold mb-4 text-gray-900">
+      Existing Exercise Requests
+    </h2>
+
+    <div *ngIf="filteredRequests.length === 0" class="text-center py-8 text-gray-500">
+      No exercise requests found
+    </div>
+
+    <table *ngIf="filteredRequests.length > 0" class="w-full border-collapse">
+
+      <!-- HEAD -->
+      <thead class="bg-gray-100 text-gray-700 border-b">
+        <tr>
+          <th class="p-3 text-left font-semibold">Request Id</th>
+          <th class="p-3 text-left font-semibold">Employee Id</th>
+          <th class="p-3 text-left font-semibold">Employee Name</th>
+          <th class="p-3 text-left font-semibold">No Of Shares</th>
+          <th class="p-3 text-left font-semibold">Status</th>
+          <th class="p-3 text-center font-semibold">Action</th>
+        </tr>
+      </thead>
+
+      <!-- BODY -->
+      <tbody>
+        <tr
+          *ngFor="let request of filteredRequests"
+          class="border-b hover:bg-gray-50 transition"
+        >
+          <td class="p-3">{{ request.requestId }}</td>
+          <td class="p-3">{{ request.employeeId }}</td>
+          <td class="p-3">{{ request.employeeName || '—' }}</td>
+          <td class="p-3">{{ request.shares }}</td>
+          <td class="p-3">
+            <span 
+              class="px-3 py-1 rounded-full text-sm font-semibold"
+              [ngClass]="{
+                'bg-yellow-100 text-yellow-800': request.status === 'pending',
+                'bg-green-100 text-green-800': request.status === 'approved',
+                'bg-red-100 text-red-800': request.status === 'rejected'
+              }"
+            >
+              {{ request.status | uppercase }}
+            </span>
+          </td>
+
+          <td class="p-3 flex justify-center gap-2">
+
+            <!-- ACCEPT BUTTON -->
+            <button 
+              (click)="openPopup(request, 'accept')"
+              [disabled]="request.status !== 'pending'"
+              class="bg-green-600 text-white px-4 py-2 rounded font-semibold
+                     hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            >
+              Accept
+            </button>
+
+            <!-- REJECT BUTTON -->
+            <button 
+              (click)="openPopup(request, 'reject')"
+              [disabled]="request.status !== 'pending'"
+              class="bg-red-600 text-white px-4 py-2 rounded font-semibold
+                     hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            >
+              Reject
+            </button>
+
+          </td>
+        </tr>
+      </tbody>
+
+    </table>
+
+  </div>
+</div>
+
+<!-- ================================================== -->
+<!-- POPUP CONFIRMATION -->
+<!-- ================================================== -->
+
+<div 
+  *ngIf="showPopup"
+  class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
+>
+  <div class="bg-white p-6 rounded-xl shadow-lg w-[350px] text-center">
+
+    <h2 class="text-xl font-semibold mb-4">
+      {{ popupAction === 'accept' ? 'Confirm Accept' : 'Confirm Reject' }}
+    </h2>
+
+    <p class="text-slate-600 mb-6">
+      Are you sure you want to 
+      <span class="font-semibold">
+        {{ popupAction === 'accept' ? 'ACCEPT' : 'REJECT' }}
+      </span>
+      this request?
+    </p>
+
+    <div class="flex justify-center gap-4">
+      <button 
+        (click)="closePopup()"
+        class="px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-100"
+      >
+        Cancel
+      </button>
+
+      <button 
+        (click)="confirmAction()"
+        class="px-5 py-2 text-white rounded-lg"
+        [ngClass]="{
+          'bg-green-600 hover:bg-green-700': popupAction === 'accept',
+          'bg-red-600 hover:bg-red-700': popupAction === 'reject'
+        }"
+      >
+        YES
+      </button>
+    </div>
+
+  </div>
+</div>

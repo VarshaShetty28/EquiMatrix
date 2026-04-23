@@ -1,0 +1,95 @@
+<div class="p-6 bg-gray-100 min-h-screen">
+
+  <!-- HEADER -->
+  <div class="mb-8 -mt-6">
+    <h1 class="text-3xl font-bold text-slate-800">
+      Vesting Schedule
+    </h1>
+    <p class="text-slate-500 text-sm mt-1">
+      View your ESOP and RSU vesting details
+    </p>
+  </div>
+
+  <!-- TOGGLE BUTTONS -->
+  <div class="flex gap-4 mb-6">
+    <button
+      (click)="selectedType = 'ALL'"
+      class="px-4 py-2 rounded"
+      [ngClass]="{
+        'bg-blue-500 text-white': selectedType === 'ALL',
+        'bg-gray-200 text-gray-700': selectedType !== 'ALL'
+      }"
+    >
+      All
+    </button>
+    <button
+      (click)="selectedType = 'ESOP'"
+      class="px-4 py-2 rounded"
+      [ngClass]="{
+        'bg-blue-500 text-white': selectedType === 'ESOP',
+        'bg-gray-200 text-gray-700': selectedType !== 'ESOP'
+      }"
+    >
+      ESOP
+    </button>
+    <button
+      (click)="selectedType = 'RSU'"
+      class="px-4 py-2 rounded"
+      [ngClass]="{
+        'bg-blue-500 text-white': selectedType === 'RSU',
+        'bg-gray-200 text-gray-700': selectedType !== 'RSU'
+      }"
+    >
+      RSU
+    </button>
+  </div>
+
+    <div *ngIf="errorMessage" class="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded">
+      {{ errorMessage }}
+    </div>
+
+    <div *ngIf="isLoading" class="mb-4 p-4 bg-slate-50 border border-slate-200 text-slate-600 rounded">
+      Loading your vesting schedule...
+    </div>
+
+    <div *ngIf="!isLoading && getFilteredData().length === 0 && !errorMessage" class="mb-4 p-4 bg-yellow-50 border border-yellow-200 text-yellow-700 rounded">
+      No vesting schedule data available for the selected type.
+    </div>
+
+    <!-- TABLE CARD -->
+    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6" *ngIf="getFilteredData().length > 0">
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+
+          <!-- TABLE HEADER -->
+          <thead class="border-b border-slate-200 bg-slate-50">
+            <tr>
+              <th class="text-left px-4 py-3 text-slate-500 font-semibold">Award ID</th>
+              <th class="text-left px-4 py-3 text-slate-500 font-semibold">Type</th>
+              <th class="text-left px-4 py-3 text-slate-500 font-semibold">Vesting Date</th>
+              <th class="text-left px-4 py-3 text-slate-500 font-semibold">Status</th>
+              <th class="text-left px-4 py-3 text-slate-500 font-semibold">Units Vested</th>
+              <th class="text-left px-4 py-3 text-slate-500 font-semibold">Cumulative Vested</th>
+              <th class="text-left px-4 py-3 text-slate-500 font-semibold">Remaining Unvested</th>
+              <th class="text-left px-4 py-3 text-slate-500 font-semibold">Strike Price</th>
+            </tr>
+          </thead>
+
+          <!-- TABLE BODY -->
+          <tbody>
+            <tr *ngFor="let record of getFilteredData()" class="border-b border-slate-100 hover:bg-[#F0FDF4] transition">
+              <td class="px-4 py-3 text-slate-700 font-medium">{{ record.awardId }}</td>
+              <td class="px-4 py-3 text-slate-700">{{ record.type }}</td>
+              <td class="px-4 py-3 text-slate-600">{{ record.vestingDate | date:'yyyy-MM-dd' }}</td>
+              <td class="px-4 py-3 text-slate-600">{{ record.status }}</td>
+              <td class="px-4 py-3 text-slate-600">{{ record.shares }}</td>
+              <td class="px-4 py-3 text-slate-600">{{ record.cumulativeVested }}</td>
+              <td class="px-4 py-3 text-slate-600">{{ record.remainingUnvested }}</td>
+              <td class="px-4 py-3 text-slate-600">{{ record.type === 'RSU' ? '—' : record.strikePrice }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>

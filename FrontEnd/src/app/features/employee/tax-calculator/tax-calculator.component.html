@@ -1,0 +1,282 @@
+<div class="min-h-screen bg-slate-50 py-8">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="bg-white rounded-[28px] border border-slate-200 shadow-sm p-6 mb-8">
+      <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div>
+          <p class="text-xs uppercase tracking-[0.3em] font-semibold text-slate-500">Tax Calculator</p>
+          <h1 class="mt-2 text-3xl font-bold text-slate-900">Employee Equity Tax Estimator</h1>
+          <p class="mt-2 text-slate-600 max-w-2xl">Calculate tax for ESOP exercises and RSU share sales with instant slab estimates and net proceeds.</p>
+        </div>
+        <a routerLink="/employee" class="inline-flex items-center justify-center rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-slate-800">Back to Dashboard</a>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 xl:grid-cols-[1.2fr_0.8fr] gap-8">
+      <div class="space-y-6">
+        <div class="bg-white rounded-[28px] border border-slate-200 shadow-sm p-6">
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p class="text-xs uppercase tracking-[0.3em] font-semibold text-slate-500">Calculation Mode</p>
+              <h2 class="mt-2 text-xl font-semibold text-slate-900">Select a scenario</h2>
+            </div>
+          </div>
+
+          <div class="mt-6 grid grid-cols-2 gap-3">
+            <button type="button" class="rounded-2xl border px-4 py-3 text-sm font-semibold transition focus:outline-none"
+              [class.border-slate-900]="calculation.taxType === 'exercise'"
+              [class.text-slate-900]="calculation.taxType === 'exercise'"
+              [class.bg-slate-900]="calculation.taxType === 'exercise'"
+              [class.text-white]="calculation.taxType === 'exercise'"
+              [class.border-slate-200]="calculation.taxType !== 'exercise'"
+              [class.text-slate-500]="calculation.taxType !== 'exercise'"
+              [class.bg-white]="calculation.taxType !== 'exercise'"
+              (click)="calculation.taxType = 'exercise'; onTaxTypeChange()">
+              Exercise Tax
+            </button>
+            <button type="button" class="rounded-2xl border px-4 py-3 text-sm font-semibold transition focus:outline-none"
+              [class.border-slate-900]="calculation.taxType === 'selling'"
+              [class.text-slate-900]="calculation.taxType === 'selling'"
+              [class.bg-slate-900]="calculation.taxType === 'selling'"
+              [class.text-white]="calculation.taxType === 'selling'"
+              [class.border-slate-200]="calculation.taxType !== 'selling'"
+              [class.text-slate-500]="calculation.taxType !== 'selling'"
+              [class.bg-white]="calculation.taxType !== 'selling'"
+              (click)="calculation.taxType = 'selling'; onTaxTypeChange()">
+              Selling Tax
+            </button>
+          </div>
+
+          <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <p class="text-xs uppercase tracking-[0.3em] font-semibold text-slate-500">Award Type</p>
+              <div class="mt-3 flex gap-3">
+                <button type="button" class="rounded-2xl border px-4 py-3 text-sm font-semibold transition focus:outline-none"
+                  [class.border-slate-900]="calculation.awardType === 'esop'"
+                  [class.text-slate-900]="calculation.awardType === 'esop'"
+                  [class.bg-slate-900]="calculation.awardType === 'esop'"
+                  [class.text-white]="calculation.awardType === 'esop'"
+                  [class.border-slate-200]="calculation.awardType !== 'esop'"
+                  [class.text-slate-500]="calculation.awardType !== 'esop'"
+                  [class.bg-white]="calculation.awardType !== 'esop'"
+                  (click)="calculation.awardType = 'esop'; onAwardTypeChange()">
+                  ESOP
+                </button>
+                <button type="button" class="rounded-2xl border px-4 py-3 text-sm font-semibold transition focus:outline-none"
+                  [class.border-slate-900]="calculation.awardType === 'rsu'"
+                  [class.text-slate-900]="calculation.awardType === 'rsu'"
+                  [class.bg-slate-900]="calculation.awardType === 'rsu'"
+                  [class.text-white]="calculation.awardType === 'rsu'"
+                  [class.border-slate-200]="calculation.awardType !== 'rsu'"
+                  [class.text-slate-500]="calculation.awardType !== 'rsu'"
+                  [class.bg-white]="calculation.awardType !== 'rsu'"
+                  (click)="calculation.awardType = 'rsu'; onAwardTypeChange()">
+                  RSU
+                </button>
+              </div>
+            </div>
+
+            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <p class="text-xs uppercase tracking-[0.3em] font-semibold text-slate-500">Holding Period</p>
+              <p class="mt-3 text-sm text-slate-700">This only applies to selling tax.</p>
+              <input
+                type="number"
+                min="0"
+                [(ngModel)]="calculation.holdingPeriodMonths"
+                class="mt-3 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-slate-900 focus:outline-none"
+                placeholder="Months held"
+              />
+            </div>
+          </div>
+
+          <div class="mt-6 grid grid-cols-1 gap-4">
+            <div>
+              <label class="mb-2 block text-sm font-semibold text-slate-600">Stock Symbol</label>
+              <div class="flex gap-3">
+                <input
+                  type="text"
+                  [(ngModel)]="calculation.stockSymbol"
+                  class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-slate-900 focus:outline-none"
+                  placeholder="e.g. IBM"
+                />
+                <button
+                  type="button"
+                  (click)="fetchMarketPrice()"
+                  class="rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+                >
+                  {{ marketLoading ? 'Loading…' : 'Fetch' }}
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label class="mb-2 block text-sm font-semibold text-slate-600">Market Price per Share</label>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                [(ngModel)]="calculation.marketPrice"
+                class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-slate-900 focus:outline-none"
+                placeholder="Enter market price"
+              />
+            </div>
+
+            <div>
+              <label class="mb-2 block text-sm font-semibold text-slate-600">Number of Shares</label>
+              <input
+                type="number"
+                min="0"
+                step="1"
+                [(ngModel)]="calculation.shares"
+                class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-slate-900 focus:outline-none"
+                placeholder="Enter number of shares"
+              />
+            </div>
+
+            <div>
+              <label class="mb-2 block text-sm font-semibold text-slate-600">Exercise Price per Share</label>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                [(ngModel)]="calculation.exercisePrice"
+                [disabled]="calculation.awardType === 'rsu'"
+                class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-slate-900 focus:outline-none disabled:cursor-not-allowed disabled:bg-slate-100"
+                placeholder="Enter exercise price"
+              />
+            </div>
+
+            <div *ngIf="calculation.taxType === 'selling'">
+              <label class="mb-2 block text-sm font-semibold text-slate-600">Sale Price per Share</label>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                [(ngModel)]="calculation.salePrice"
+                class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-slate-900 focus:outline-none"
+                placeholder="Enter sale price"
+              />
+            </div>
+          </div>
+
+          <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <button
+              type="button"
+              (click)="calculateTax()"
+              [disabled]="loading"
+              class="rounded-2xl bg-emerald-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-slate-300"
+            >
+              {{ loading ? 'Calculating…' : 'Calculate Tax' }}
+            </button>
+            <button
+              type="button"
+              (click)="resetCalculation()"
+              class="rounded-2xl border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+            >
+              Reset
+            </button>
+          </div>
+
+          <div *ngIf="errorMessage || marketPriceError" class="mt-6 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+            <p *ngIf="errorMessage">{{ errorMessage }}</p>
+            <p *ngIf="marketPriceError">{{ marketPriceError }}</p>
+          </div>
+        </div>
+
+        <div *ngIf="result" class="space-y-6">
+          <div class="bg-white rounded-[28px] border border-slate-200 shadow-sm p-6">
+            <p class="text-xs uppercase tracking-[0.3em] font-semibold text-slate-500">Results</p>
+            <h2 class="mt-2 text-2xl font-semibold text-slate-900">{{ getTaxLabel() }}</h2>
+            <p class="mt-2 text-sm text-slate-600">Review your tax estimate and net proceeds.</p>
+
+            <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div class="rounded-3xl bg-slate-50 p-4">
+                <p class="text-sm text-slate-500">Shares</p>
+                <p class="mt-2 text-2xl font-semibold text-slate-900">{{ calculation.shares }}</p>
+              </div>
+              <div class="rounded-3xl bg-slate-50 p-4">
+                <p class="text-sm text-slate-500">Market Price</p>
+                <p class="mt-2 text-2xl font-semibold text-slate-900">₹{{ calculation.marketPrice | number:'1.2-2' }}</p>
+              </div>
+              <div *ngIf="calculation.taxType === 'exercise'" class="rounded-3xl bg-slate-50 p-4">
+                <p class="text-sm text-slate-500">Exercise Price</p>
+                <p class="mt-2 text-2xl font-semibold text-slate-900">₹{{ calculation.exercisePrice | number:'1.2-2' }}</p>
+              </div>
+              <div *ngIf="calculation.taxType === 'selling'" class="rounded-3xl bg-slate-50 p-4">
+                <p class="text-sm text-slate-500">Sale Price</p>
+                <p class="mt-2 text-2xl font-semibold text-slate-900">₹{{ calculation.salePrice | number:'1.2-2' }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-[28px] border border-slate-200 shadow-sm p-6">
+            <p class="text-xs uppercase tracking-[0.3em] font-semibold text-slate-500">Summary</p>
+            <div class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <div class="rounded-3xl bg-slate-50 p-4">
+                <p class="text-sm text-slate-500">Taxable Amount</p>
+                <p class="mt-2 text-2xl font-semibold text-slate-900">₹{{ calculation.taxType === 'exercise' ? getPerquisiteValue() : getCapitalGainAmount() | number:'1.2-2' }}</p>
+              </div>
+              <div class="rounded-3xl bg-amber-50 p-4">
+                <p class="text-sm text-amber-700">Tax Liability</p>
+                <p class="mt-2 text-2xl font-semibold text-amber-900">₹{{ getTotalTax() | number:'1.2-2' }}</p>
+              </div>
+              <div class="rounded-3xl bg-emerald-50 p-4">
+                <p class="text-sm text-emerald-700">Net Proceeds</p>
+                <p class="mt-2 text-2xl font-semibold text-emerald-900">₹{{ getNetProceeds() | number:'1.2-2' }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-[28px] border border-slate-200 shadow-sm p-6">
+            <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p class="text-xs uppercase tracking-[0.3em] font-semibold text-slate-500">Tax Classification</p>
+                <p class="mt-2 text-lg font-semibold text-slate-900">{{ getHoldingClassification() || getTaxLabel() }}</p>
+              </div>
+            </div>
+
+            <div *ngIf="result.slabBreakdown?.length" class="mt-6 grid grid-cols-1 gap-4">
+              <div *ngFor="let slab of result.slabBreakdown" class="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                <div class="flex items-center justify-between gap-4">
+                  <div>
+                    <p class="text-sm text-slate-500">Rate</p>
+                    <p class="mt-1 text-lg font-semibold text-slate-900">{{ slab.rate * 100 | number:'1.2-2' }}%</p>
+                  </div>
+                  <div>
+                    <p class="text-sm text-slate-500">Taxable</p>
+                    <p class="mt-1 text-lg font-semibold text-slate-900">₹{{ slab.taxableIncomeUsd | number:'1.2-2' }}</p>
+                  </div>
+                  <div>
+                    <p class="text-sm text-slate-500">Tax Amount</p>
+                    <p class="mt-1 text-lg font-semibold text-slate-900">₹{{ slab.taxAmountUsd | number:'1.2-2' }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-6">
+        <div class="bg-white rounded-[28px] border border-slate-200 shadow-sm p-6">
+          <p class="text-xs uppercase tracking-[0.3em] font-semibold text-slate-500">Instructions</p>
+          <h3 class="mt-3 text-xl font-semibold text-slate-900">How to use</h3>
+          <ul class="mt-4 space-y-3 text-sm text-slate-600">
+            <li>1. Choose the type of tax estimate you want.</li>
+            <li>2. Select ESOP or RSU. RSU always uses ₹0 exercise price.</li>
+            <li>3. Fetch the latest market price or enter it manually.</li>
+            <li>4. Enter the number of shares and sale price for selling scenarios.</li>
+            <li>5. Click Calculate to see tax and net proceeds.</li>
+          </ul>
+        </div>
+
+        <div class="bg-white rounded-[28px] border border-slate-200 shadow-sm p-6">
+          <p class="text-xs uppercase tracking-[0.3em] font-semibold text-slate-500">Additional details</p>
+          <div class="mt-4 space-y-4 text-sm text-slate-600">
+            <p><span class="font-semibold text-slate-900">Exercise tax</span> is based on the perquisite value of ESOP/RSU exercise.</p>
+            <p><span class="font-semibold text-slate-900">Selling tax</span> uses LTCG if holding is 12+ months, else slab-based STCG.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

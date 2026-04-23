@@ -1,0 +1,124 @@
+<div class="w-64 h-screen bg-[#FAFAFA] text-slate-700 flex flex-col p-4">
+
+  <!-- LOGO -->
+  <div class="flex items-center gap-3 mb-10">
+    <img
+      src="assets/NewLogo.png"
+      alt="EquiMatrix Logo"
+      class="h-14 object-contain"
+    />
+  </div>
+<div
+  class="flex items-center gap-3 px-4 py-3 mb-6 rounded-xl bg-slate-100
+         cursor-pointer hover:bg-slate-200 transition"
+>
+  <!-- Avatar -->
+  <div class="h-9 w-9 rounded-full bg-green-500 text-white flex items-center justify-center">
+  <svg xmlns="http://www.w3.org/2000/svg"
+       class="h-5 w-5"
+       viewBox="0 0 20 20" fill="currentColor">
+    <path fill-rule="evenodd"
+          d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 8a7 7 0 1114 0H3z"
+          clip-rule="evenodd" />
+  </svg>
+</div>
+
+  <!-- Employee name -->
+  <div class="text-sm font-medium text-slate-700">
+    {{ employeeName }}
+  </div>
+</div>
+  <!-- MENU -->
+  <nav class="flex flex-col gap-3 text-sm">
+
+    <!-- DASHBOARD -->
+    <a  
+      routerLink="/employee"
+      routerLinkActive="text-[#22C55E]"
+      [routerLinkActiveOptions]="{ exact: true }"
+      #empDashboard="routerLinkActive"
+      class="flex items-center justify-between px-4 py-2 rounded-xl group"
+      [ngClass]="{
+        'bg-[#D1FADF] text-[#22C55E]': empDashboard.isActive,
+        'hover:bg-slate-100 text-slate-600': !empDashboard.isActive
+      }"
+    >
+      <span class="font-medium">
+        Dashboard
+      </span>
+    </a>
+
+    <!-- VESTING SCHEDULE -->
+    <a
+      routerLink="/employee/vesting"
+      routerLinkActive="text-[#22C55E]"
+      #empVesting="routerLinkActive"
+      class="flex items-center justify-between px-4 py-2 rounded-xl group"
+      [ngClass]="{
+        'bg-[#D1FADF] text-[#22C55E]': empVesting.isActive,
+        'hover:bg-slate-100 text-slate-600': !empVesting.isActive
+      }"
+    >
+      <span class="font-medium">
+        Vesting Schedule
+      </span>
+    </a>
+
+    <!-- TAX CALCULATOR -->
+    <a
+      routerLink="/employee/tax-calculator"
+      routerLinkActive="text-[#22C55E]"
+      #empTaxCalculator="routerLinkActive"
+      class="flex items-center justify-between px-4 py-2 rounded-xl group"
+      [ngClass]="{
+        'bg-[#D1FADF] text-[#22C55E]': empTaxCalculator.isActive,
+        'hover:bg-slate-100 text-slate-600': !empTaxCalculator.isActive
+      }"
+    >
+      <span class="font-medium">
+        Tax Calculator
+      </span>
+    </a>
+
+    <!-- MY REQUESTS -->
+    <a
+      routerLink="/employee/requests"
+      routerLinkActive="text-[#22C55E]"
+      #empRequests="routerLinkActive"
+      class="flex items-center justify-between px-4 py-2 rounded-xl group"
+      [ngClass]="{
+        'bg-[#D1FADF] text-[#22C55E]': empRequests.isActive,
+        'hover:bg-slate-100 text-slate-600': !empRequests.isActive
+      }"
+    >
+      <span class="font-medium">
+        My Requests
+      </span>
+    </a>
+
+    <!-- NOTIFICATIONS -->
+    <a
+      routerLink="/employee/notifications"
+      routerLinkActive="text-[#22C55E]"
+      #empNotifications="routerLinkActive"
+      class="flex items-center justify-between px-4 py-2 rounded-xl group"
+      [ngClass]="{
+        'bg-[#D1FADF] text-[#22C55E]': empNotifications.isActive,
+        'hover:bg-slate-100 text-slate-600': !empNotifications.isActive
+      }"
+    >
+      <span class="font-medium">
+        Notifications
+      </span>
+    </a>
+
+  </nav>
+
+  <!-- LOGOUT BUTTON -->
+  <div class="mt-auto">
+    <button (click)="onLogout()" class="w-full bg-red-50 hover:bg-red-100 text-red-600 font-medium py-2.5 rounded-lg transition">
+      Logout
+    </button>
+  </div>
+
+</div>

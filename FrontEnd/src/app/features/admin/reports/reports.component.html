@@ -1,0 +1,120 @@
+<div class="p-6 min-h-screen bg-gray-100 text-slate-800">
+
+  <!-- HEADER -->
+   <div class="mb-10 -mt-6">
+    <h1 class="text-3xl font-bold mb-2 text-slate-800">
+      Generate Report
+    </h1>
+    </div>
+
+  <!-- SEARCH -->
+  <!-- Wrapped inside a form so that pressing Enter triggers the Generate action -->
+  <form (ngSubmit)="generateReport()" class="flex items-center gap-3 mb-8">
+
+    <input
+      type="text"
+      [(ngModel)]="userId"
+      name="userId"
+      placeholder="Enter User ID"
+      class="px-4 py-2 w-64 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-green-400 bg-white"
+    />
+
+    <button
+      type="submit"
+      [disabled]="isLoading"
+      class="px-5 py-2 rounded-lg bg-green-500 text-white font-medium hover:bg-green-600 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
+    >
+      {{ isLoading ? 'Loading...' : 'Generate' }}
+    </button>
+
+  </form>
+
+  <!-- ERROR MESSAGE -->
+  <div *ngIf="errorMessage" class="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+    {{ errorMessage }}
+  </div>
+
+  <!-- FILTER -->
+  <div class="flex gap-6 mb-6 text-sm text-slate-700" *ngIf="filteredReports.length">
+    <label class="flex items-center gap-2 cursor-pointer">
+      <input
+        type="radio"
+        name="filter"
+        value="ALL"
+        [(ngModel)]="selectedFilter"
+        (change)="applyFilter()"
+        class="accent-green-500"
+      />
+      All
+    </label>
+
+    <label class="flex items-center gap-2 cursor-pointer">
+      <input
+        type="radio"
+        name="filter"
+        value="ESOP"
+        [(ngModel)]="selectedFilter"
+        (change)="applyFilter()"
+        class="accent-green-500"
+      />
+      ESOP
+    </label>
+
+    <label class="flex items-center gap-2 cursor-pointer">
+      <input
+        type="radio"
+        name="filter"
+        value="RSU"
+        [(ngModel)]="selectedFilter"
+        (change)="applyFilter()"
+        class="accent-green-500"
+      />
+      RSU
+    </label>
+  </div>
+
+  <!-- DOWNLOAD -->
+  <div *ngIf="filteredReports.length" class="flex justify-end mb-3">
+    <button
+      (click)="downloadReport()"
+      class="px-4 py-2 text-sm rounded-lg bg-blue-500 text-white font-medium hover:bg-blue-600 transition"
+    >
+      Download Report
+    </button>
+  </div>
+
+  <!-- REPORT TABLE -->
+  <div *ngIf="filteredReports.length" class="bg-white rounded-xl border border-slate-200 overflow-hidden">
+    <table class="w-full text-sm">
+      <thead class="bg-slate-50 border-b border-slate-200">
+        <tr>
+          <th class="p-3 text-left text-slate-500 font-semibold">Award Type</th>
+          <th class="p-3 text-left text-slate-500 font-semibold">Units</th>
+          <th class="p-3 text-left text-slate-500 font-semibold">Grant Date</th>
+          <th class="p-3 text-left text-slate-500 font-semibold">Status</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr
+          *ngFor="let r of filteredReports"
+          class="border-b border-slate-100 hover:bg-green-50 transition"
+        >
+          <td class="p-3 text-slate-700">{{ r.awardType }}</td>
+          <td class="p-3 text-slate-700">{{ r.units }}</td>
+          <td class="p-3 text-slate-600">{{ r.grantDate }}</td>
+          <td class="p-3 font-medium text-slate-800">{{ r.status }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- NO DATA -->
+  <p
+    *ngIf="hasSearched && !filteredReports.length"
+    class="mt-6 text-red-500 text-sm"
+  >
+    No records found for this user.
+  </p>
+
+</div>

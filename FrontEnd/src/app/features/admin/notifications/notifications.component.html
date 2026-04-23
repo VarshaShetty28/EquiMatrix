@@ -1,0 +1,91 @@
+<div class="p-6 bg-gray-100 min-h-screen text-gray-800">
+
+  <!-- HEADER -->
+   <div class="mb-10 -mt-6">
+  <h1 class="text-3xl font-bold mb-2 text-slate-800">
+    Notifications
+  </h1>
+  <p class="text-gray-600 text-sm">
+      Stay updated with your equity award information
+    </p>
+  </div>
+
+  <!-- LOADING STATE -->
+  <div *ngIf="isLoading" class="bg-white rounded-lg p-12 border border-gray-200 text-center">
+    <p class="text-gray-500 text-lg">Loading notifications...</p>
+  </div>
+
+  <!-- ERROR STATE -->
+  <div *ngIf="errorMessage && !isLoading" class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+    <p class="text-red-600">{{ errorMessage }}</p>
+  </div>
+
+  <!-- NOTIFICATIONS LIST -->
+  <div class="space-y-4" *ngIf="!isLoading">
+
+    <!-- Notification Card -->
+    <div
+      *ngFor="let notification of notifications"
+      class="bg-white rounded-lg p-6 border"
+      [class.border-gray-200]="!notification.is_Read"
+      [class.border-blue-300]="!notification.is_Read"
+      [class.bg-blue-50]="!notification.is_Read"
+    >
+
+      <!-- Notification Header -->
+      <div class="flex items-start justify-between mb-3">
+        <div class="flex-1">
+          <div class="flex items-center gap-2">
+            <span 
+              class="inline-block px-3 py-1 rounded-full text-xs font-semibold"
+              [class.bg-blue-100]="notification.type === 'Info'"
+              [class.text-blue-800]="notification.type === 'Info'"
+              [class.bg-yellow-100]="notification.type === 'Alert'"
+              [class.text-yellow-800]="notification.type === 'Alert'"
+              [class.bg-red-100]="notification.type === 'Warning'"
+              [class.text-red-800]="notification.type === 'Warning'"
+            >
+              {{ notification.type }}
+            </span>
+            <span *ngIf="!notification.is_Read" class="inline-block w-2 h-2 rounded-full bg-blue-500"></span>
+          </div>
+          <p class="text-sm text-gray-500 mt-2">
+            {{ notification.createdDate | date: 'short' }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Notification Message -->
+      <p class="text-gray-700 leading-relaxed mb-3">
+        {{ notification.message }}
+      </p>
+
+      <!-- Mark as Read Button -->
+      <div>
+        <button
+          *ngIf="!notification.is_Read"
+          (click)="markAsRead(notification.notificationId)"
+          class="text-sm text-blue-600 hover:text-blue-800 font-medium transition"
+        >
+          Mark as read
+        </button>
+        <span *ngIf="notification.is_Read" class="text-sm text-gray-400">
+          ✓ Read
+        </span>
+      </div>
+
+    </div>
+
+    <!-- Empty State -->
+    <div
+      *ngIf="notifications.length === 0 && !isLoading && !errorMessage"
+      class="bg-white rounded-lg p-12 border border-gray-200 text-center"
+    >
+      <p class="text-gray-500 text-lg">
+        No notifications yet
+      </p>
+    </div>
+
+  </div>
+
+</div>
