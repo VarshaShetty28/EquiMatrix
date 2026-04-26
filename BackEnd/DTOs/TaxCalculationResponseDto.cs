@@ -8,6 +8,8 @@ namespace BackEnd.DTOs
         public string FinancialYear { get; set; } = null!;
         public string TaxRegime { get; set; } = null!;
         public string Category { get; set; } = null!;
+        public string Currency { get; set; } = "USD";
+        public string CurrencySymbol { get; set; } = "$";
         public decimal ReferenceFxRate { get; set; }
         public decimal AnnualIncomeUsd { get; set; }
         public decimal TotalTaxUsd { get; set; }

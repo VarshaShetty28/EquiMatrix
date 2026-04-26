@@ -53,58 +53,6 @@ namespace BackEnd.Controllers
             return Ok(countries);
         }
 
-        [HttpPost("seed")]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> SeedTaxData()
-        {
-            // Check if data already exists
-            if (await _context.TaxSlabs.AnyAsync())
-            {
-                return BadRequest("Tax slab data already exists");
-            }
-
-            // Create a minimal fallback country/regime record for schema compatibility.
-            var usCountry = new TaxCountry
-            {
-                CountryCode = "US",
-                Description = "Single-filer federal income tax brackets.",
-                ReferenceFxRate = 1.0m
-            };
-
-            _context.TaxCountries.Add(usCountry);
-            await _context.SaveChangesAsync();
-
-            var baseRegime = new TaxRegime
-            {
-                FinancialYear = "2026",
-                Regime = "Federal",
-                Category = "Single",
-                CessRate = 0.0m,
-                RebateThresholdUsd = 0.0m,
-                RebateAmountUsd = 0.0m,
-                TaxCountryId = usCountry.Id
-            };
-
-            _context.TaxRegimes.Add(baseRegime);
-            await _context.SaveChangesAsync();
-
-            var slabs = new[]
-            {
-                new TaxSlab { LowerBoundUsd = 0.00m, UpperBoundUsd = 12400.00m, Rate = 0.10m, TaxRegimeId = baseRegime.Id },
-                new TaxSlab { LowerBoundUsd = 12400.00m, UpperBoundUsd = 50400.00m, Rate = 0.12m, TaxRegimeId = baseRegime.Id },
-                new TaxSlab { LowerBoundUsd = 50400.00m, UpperBoundUsd = 105700.00m, Rate = 0.22m, TaxRegimeId = baseRegime.Id },
-                new TaxSlab { LowerBoundUsd = 105700.00m, UpperBoundUsd = 201775.00m, Rate = 0.24m, TaxRegimeId = baseRegime.Id },
-                new TaxSlab { LowerBoundUsd = 201775.00m, UpperBoundUsd = 256225.00m, Rate = 0.32m, TaxRegimeId = baseRegime.Id },
-                new TaxSlab { LowerBoundUsd = 256225.00m, UpperBoundUsd = 640600.00m, Rate = 0.35m, TaxRegimeId = baseRegime.Id },
-                new TaxSlab { LowerBoundUsd = 640600.00m, UpperBoundUsd = null, Rate = 0.37m, TaxRegimeId = baseRegime.Id }
-            };
-
-            _context.TaxSlabs.AddRange(slabs);
-            await _context.SaveChangesAsync();
-
-            return Ok("Tax data seeded successfully");
-        }
-
         [HttpGet("market-price")]
         [Authorize(Roles = "Admin,Employee")]
         public async Task<IActionResult> GetMarketPrice([FromQuery] string symbol, [FromQuery] string? date = null)

@@ -62,6 +62,8 @@ namespace BackEnd.Services
                 FinancialYear = "2026",
                 TaxRegime = "Federal",
                 Category = "Single",
+                Currency = "USD",
+                CurrencySymbol = "$",
                 ReferenceFxRate = 1.0m,
                 AnnualIncomeUsd = income,
                 TotalTaxUsd = netTax,
