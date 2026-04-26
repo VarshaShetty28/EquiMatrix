@@ -1,17 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { MarketPriceService } from '@core/services/market-price.service';
+import { TaxService, TaxCalculationResponse } from '@core/services/tax.service';
 
 interface TaxCalculatorResult {
   totalTax: number;
   slabBreakdown: Array<{ rate: number; taxableIncomeUsd: number; taxAmountUsd: number }>;
+  currencySymbol: string;
 }
 
 @Component({
   selector: 'app-tax-calculator',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './tax-calculator.component.html'
 })
 export class TaxCalculatorComponent implements OnInit {
@@ -32,7 +35,7 @@ export class TaxCalculatorComponent implements OnInit {
   errorMessage = '';
   marketPriceError = '';
 
-  constructor(private marketPriceService: MarketPriceService) {}
+  constructor(private marketPriceService: MarketPriceService, private taxService: TaxService) {}
 
   ngOnInit(): void {
     this.fetchMarketPrice();
@@ -85,20 +88,32 @@ export class TaxCalculatorComponent implements OnInit {
       ? this.getPerquisiteValue()
       : this.getCapitalGainAmount();
 
-    const totalTax = this.getTotalTax();
+    if (baseAmount <= 0) {
+      this.errorMessage = 'Taxable amount must be greater than zero.';
+      this.loading = false;
+      return;
+    }
 
-    this.result = {
-      totalTax,
-      slabBreakdown: [
-        {
-          rate: this.getTaxRate(),
-          taxableIncomeUsd: baseAmount,
-          taxAmountUsd: totalTax
-        }
-      ]
-    };
-
-    this.loading = false;
+    // Call backend API instead of calculating locally
+    this.taxService.calculateTax(baseAmount).subscribe({
+      next: (taxResult: TaxCalculationResponse) => {
+        this.result = {
+          totalTax: taxResult.netTaxUsd,
+          slabBreakdown: taxResult.slabBreakdown.map(slab => ({
+            rate: slab.rate,
+            taxableIncomeUsd: slab.taxableIncomeUsd,
+            taxAmountUsd: slab.taxAmountUsd
+          })),
+          currencySymbol: '$'
+        };
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Tax calculation failed:', err);
+        this.errorMessage = 'Failed to calculate tax. Please try again.';
+        this.loading = false;
+      }
+    });
   }
 
   resetCalculation(): void {
@@ -124,24 +139,18 @@ export class TaxCalculatorComponent implements OnInit {
     return this.calculation.shares * Math.max(0, this.calculation.salePrice - this.calculation.marketPrice);
   }
 
-  getTaxRate(): number {
-    if (this.calculation.taxType === 'selling') {
-      return this.calculation.holdingPeriodMonths >= 12 ? 0.10 : 0.20;
-    }
-    return 0.25;
-  }
-
   getTotalTax(): number {
-    const taxable = this.calculation.taxType === 'exercise'
-      ? this.getPerquisiteValue()
-      : this.getCapitalGainAmount();
-    return taxable * this.getTaxRate();
+    return this.result?.totalTax ?? 0;
   }
 
   getNetProceeds(): number {
     if (this.calculation.taxType === 'exercise') {
-      return (this.calculation.marketPrice ?? 0) * this.calculation.shares - this.getTotalTax();
+      // For exercise: Net Proceeds = (Market Price - Strike Price) × Shares - Tax
+      const strikePrice = this.calculation.awardType === 'rsu' ? 0 : this.calculation.exercisePrice;
+      const gainPerShare = (this.calculation.marketPrice ?? 0) - strikePrice;
+      return gainPerShare * this.calculation.shares - this.getTotalTax();
     }
+    // For selling: Net Proceeds = Sale Price × Shares - Tax
     return this.calculation.salePrice * this.calculation.shares - this.getTotalTax();
   }
 

@@ -11,6 +11,8 @@ namespace BackEnd.DTOs
         public DateTime Requested_Date { get; set; }
         public string Status { get; set; } = null!;
         public int Employee_EmpId { get; set; }
+        public string Currency { get; set; } = "USD";
+        public string CurrencySymbol { get; set; } = "$";
         public decimal ExerciseAmountUsd { get; set; }
         public decimal TaxableGainUsd { get; set; }
         public decimal TaxAmountUsd { get; set; }
