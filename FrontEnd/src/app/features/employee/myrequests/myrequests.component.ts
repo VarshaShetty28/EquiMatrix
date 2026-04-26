@@ -88,7 +88,6 @@ export class MyRequestsComponent implements OnInit {
   ngOnInit() {
     this.loadExercisableShares();
     this.loadExerciseRequests();
-    this.seedTaxData();
   }
 
   loadExercisableShares() {
@@ -130,14 +129,6 @@ export class MyRequestsComponent implements OnInit {
       .subscribe({
         next: (data) => this.exerciseRequests = data,
         error: (err) => console.error('Error loading requests', err)
-      });
-  }
-
-  seedTaxData() {
-    this.http.post('https://localhost:7132/api/Tax/seed', {})
-      .subscribe({
-        next: () => console.log('Tax data seeded'),
-        error: (err) => console.log('Tax data already exists or error:', err)
       });
   }
 

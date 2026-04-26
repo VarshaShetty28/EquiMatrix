@@ -115,7 +115,8 @@
                 min="0"
                 step="0.01"
                 [(ngModel)]="calculation.marketPrice"
-                class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-slate-900 focus:outline-none"
+                readonly
+                class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-slate-900 focus:outline-none cursor-not-allowed bg-slate-100"
                 placeholder="Enter market price"
               />
             </div>
@@ -195,15 +196,15 @@
               </div>
               <div class="rounded-3xl bg-slate-50 p-4">
                 <p class="text-sm text-slate-500">Market Price</p>
-                <p class="mt-2 text-2xl font-semibold text-slate-900">₹{{ calculation.marketPrice | number:'1.2-2' }}</p>
+              <p class="mt-2 text-2xl font-semibold text-slate-900">$ {{ calculation.marketPrice | number:'1.2-2' }}</p>
               </div>
               <div *ngIf="calculation.taxType === 'exercise'" class="rounded-3xl bg-slate-50 p-4">
                 <p class="text-sm text-slate-500">Exercise Price</p>
-                <p class="mt-2 text-2xl font-semibold text-slate-900">₹{{ calculation.exercisePrice | number:'1.2-2' }}</p>
+                <p class="mt-2 text-2xl font-semibold text-slate-900">$ {{ calculation.exercisePrice | number:'1.2-2' }}</p>
               </div>
               <div *ngIf="calculation.taxType === 'selling'" class="rounded-3xl bg-slate-50 p-4">
                 <p class="text-sm text-slate-500">Sale Price</p>
-                <p class="mt-2 text-2xl font-semibold text-slate-900">₹{{ calculation.salePrice | number:'1.2-2' }}</p>
+                <p class="mt-2 text-2xl font-semibold text-slate-900">$ {{ calculation.salePrice | number:'1.2-2' }}</p>
               </div>
             </div>
           </div>
@@ -213,15 +214,15 @@
             <div class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-3">
               <div class="rounded-3xl bg-slate-50 p-4">
                 <p class="text-sm text-slate-500">Taxable Amount</p>
-                <p class="mt-2 text-2xl font-semibold text-slate-900">₹{{ calculation.taxType === 'exercise' ? getPerquisiteValue() : getCapitalGainAmount() | number:'1.2-2' }}</p>
+                <p class="mt-2 text-2xl font-semibold text-slate-900">$ {{ calculation.taxType === 'exercise' ? getPerquisiteValue() : getCapitalGainAmount() | number:'1.2-2' }}</p>
               </div>
               <div class="rounded-3xl bg-amber-50 p-4">
                 <p class="text-sm text-amber-700">Tax Liability</p>
-                <p class="mt-2 text-2xl font-semibold text-amber-900">₹{{ getTotalTax() | number:'1.2-2' }}</p>
+                <p class="mt-2 text-2xl font-semibold text-amber-900">$ {{ getTotalTax() | number:'1.2-2' }}</p>
               </div>
               <div class="rounded-3xl bg-emerald-50 p-4">
                 <p class="text-sm text-emerald-700">Net Proceeds</p>
-                <p class="mt-2 text-2xl font-semibold text-emerald-900">₹{{ getNetProceeds() | number:'1.2-2' }}</p>
+                <p class="mt-2 text-2xl font-semibold text-emerald-900">$ {{ getNetProceeds() | number:'1.2-2' }}</p>
               </div>
             </div>
           </div>
@@ -243,11 +244,11 @@
                   </div>
                   <div>
                     <p class="text-sm text-slate-500">Taxable</p>
-                    <p class="mt-1 text-lg font-semibold text-slate-900">₹{{ slab.taxableIncomeUsd | number:'1.2-2' }}</p>
+                    <p class="mt-1 text-lg font-semibold text-slate-900">$ {{ slab.taxableIncomeUsd | number:'1.2-2' }}</p>
                   </div>
                   <div>
                     <p class="text-sm text-slate-500">Tax Amount</p>
-                    <p class="mt-1 text-lg font-semibold text-slate-900">₹{{ slab.taxAmountUsd | number:'1.2-2' }}</p>
+                    <p class="mt-1 text-lg font-semibold text-slate-900">$ {{ slab.taxAmountUsd | number:'1.2-2' }}</p>
                   </div>
                 </div>
               </div>
@@ -262,7 +263,7 @@
           <h3 class="mt-3 text-xl font-semibold text-slate-900">How to use</h3>
           <ul class="mt-4 space-y-3 text-sm text-slate-600">
             <li>1. Choose the type of tax estimate you want.</li>
-            <li>2. Select ESOP or RSU. RSU always uses ₹0 exercise price.</li>
+            <li>2. Select ESOP or RSU. RSU always uses $0 exercise price.</li>
             <li>3. Fetch the latest market price or enter it manually.</li>
             <li>4. Enter the number of shares and sale price for selling scenarios.</li>
             <li>5. Click Calculate to see tax and net proceeds.</li>

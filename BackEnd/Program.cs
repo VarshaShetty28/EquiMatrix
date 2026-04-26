@@ -12,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 // =============================
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
-    {
+    { 
         // Angular expects camelCase
         options.JsonSerializerOptions.PropertyNamingPolicy =
             System.Text.Json.JsonNamingPolicy.CamelCase;

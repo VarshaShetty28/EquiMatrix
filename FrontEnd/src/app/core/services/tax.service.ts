@@ -15,6 +15,8 @@ export interface TaxCalculationResponse {
   financialYear: string;
   taxRegime: string;
   category: string;
+  currency: string;
+  currencySymbol: string;
   annualIncomeUsd: number;
   totalTaxUsd: number;
   totalCessUsd: number;
