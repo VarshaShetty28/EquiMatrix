@@ -1,0 +1,11 @@
+# .NET build outputs
+BackEnd/bin/
+BackEnd/obj/
+
+# Logs and runtime data
+*.log
+BackEnd/market_price_cache.json
+BackEnd/market_price_log.json
+
+# Local backend configuration (per developer)
+BackEnd/appsettings.json
