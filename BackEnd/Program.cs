@@ -121,6 +121,15 @@ builder.Services.AddCors(options =>
 // =============================
 var app = builder.Build();
 
+// =============================
+// DATABASE MIGRATION
+// =============================
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    context.Database.Migrate(); // Apply pending migrations
+}
+
 // Swagger UI (Dev only)
 if (app.Environment.IsDevelopment())
 {
